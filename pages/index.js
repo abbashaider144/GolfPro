@@ -11,7 +11,7 @@ export default function Home() {
               <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
             ))}
           </nav>
-        </div>
+        </div> 
       </header>
 
       <section className="container mx-auto px-6 py-16">
