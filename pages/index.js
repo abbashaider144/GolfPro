@@ -85,30 +85,30 @@ function Clock({ className = "w-4 h-4" }) {
   )
 }
 
+const SITE = {
+  title: "ProShop",
+  nav: [
+    { href: "/", label: "Home" },
+    { href: "/products", label: "Products" },
+    { href: "/cart", label: "Cart" },
+    { href: "/request", label: "Request Gear" },
+    { href: "/contact", label: "Contact" },
+  ],
+}
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="border-b bg-white">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="text-2xl font-bold text-green-700">ProShop</div>
-          <nav className="flex gap-8 text-sm font-medium">
-            <a href="#" className="text-green-700 hover:text-green-800">
-              Home
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700">
-              Products
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700 flex items-center gap-1">
-              <ShoppingCart className="w-4 h-4" />
-              Cart
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700">
-              Request Gear
-            </a>
-            <a href="#" className="text-gray-600 hover:text-green-700">
-              Contact
-            </a>
+        <div className="container mx-auto px-6 py-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">{SITE.title}</h1>
+          <nav className="flex gap-6 text-sm">
+            {SITE.nav.map((item) => (
+              <a key={item.href} href={item.href} className="nav-link">
+                {item.label}
+              </a>
+            ))}
           </nav>
         </div>
       </header>
