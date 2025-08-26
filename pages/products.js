@@ -51,9 +51,8 @@ const Modal = ({ isOpen, onClose, children }) => {
   )
 }
 
-// SITE constants (same as home page)
 const SITE = {
-  title: "Greenway Golf Pro Shop",
+  title: "Shuswap Lake Golf Course",
   nav: [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },

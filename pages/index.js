@@ -86,7 +86,7 @@ function Clock({ className = "w-4 h-4" }) {
 }
 
 const SITE = {
-  title: "ProShop",
+  title: "Shuswap Lake Golf Course",
   nav: [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
@@ -124,7 +124,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         <div className="relative container mx-auto px-6 h-full flex items-center">
           <div className="max-w-2xl text-white">
-            <h1 className="text-5xl font-bold mb-4">Your Gear, Your Game, Our Pro Shop.</h1>
+            <h1 className="text-5xl font-bold mb-4">Welcome to Shuswap Lake Golf Course Pro Shop</h1>
             <p className="text-xl mb-8">Get the golf gear you want—even if it's not in stock.</p>
             <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg">
               Find or Request Gear
@@ -354,8 +354,10 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-4">ProShop</h3>
-              <p className="text-gray-400">Your premier destination for golf equipment and accessories.</p>
+              <h3 className="text-xl font-bold mb-4">Shuswap Lake Golf Course</h3>
+              <p className="text-gray-400">
+                Your premier destination for golf equipment and accessories at beautiful Shuswap Lake.
+              </p>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center">

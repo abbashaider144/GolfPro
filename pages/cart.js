@@ -47,7 +47,7 @@ const CheckIcon = () => (
 
 // SITE constants
 const SITE = {
-  title: "Greenway Golf Pro Shop",
+  title: "Shuswap Lake Golf Course",
   nav: [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
