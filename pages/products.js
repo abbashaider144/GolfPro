@@ -1,33 +1,416 @@
-import { SITE } from '../constants/constants';
+"use client"
+
+import { useState } from "react"
+
+// Inline Button component
+const Button = ({ children, onClick, className = "", disabled = false, variant = "primary" }) => {
+  const baseClasses =
+    "px-4 py-2 rounded font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  const variants = {
+    primary: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
+    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
+    outline: "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseClasses} ${variants[variant]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
+    >
+      {children}
+    </button>
+  )
+}
+
+// Inline Card components
+const Card = ({ children, className = "" }) => (
+  <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>{children}</div>
+)
+
+const CardContent = ({ children, className = "" }) => <div className={`p-6 ${className}`}>{children}</div>
+
+// Inline Modal component
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-end p-4">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// SITE constants (same as home page)
+const SITE = {
+  title: "Greenway Golf Pro Shop",
+  nav: [
+    { href: "/", label: "Home" },
+    { href: "/products", label: "Products" },
+    { href: "/cart", label: "Cart" },
+    { href: "/request", label: "Request Gear" },
+    { href: "/contact", label: "Contact" },
+  ],
+}
+
+// Sample golf products data
+const PRODUCTS = [
+  {
+    id: 1,
+    name: "TaylorMade Driver",
+    description: "High-performance driver for maximum distance",
+    price: 399.99,
+    category: "Clubs",
+    gender: "Men's",
+    image: "/golf-driver-club.png",
+    inStock: true,
+  },
+  {
+    id: 2,
+    name: "Nike Golf Shoes",
+    description: "Comfortable and stylish golf shoes",
+    price: 129.99,
+    category: "Shoes",
+    gender: "Men's",
+    image: "/mens-golf-shoes.png",
+    inStock: false,
+  },
+  {
+    id: 3,
+    name: "Callaway Iron Set",
+    description: "Professional iron set for improved accuracy",
+    price: 799.99,
+    category: "Clubs",
+    gender: "Men's",
+    image: "/golf-iron-set.png",
+    inStock: true,
+  },
+  {
+    id: 4,
+    name: "Women's Golf Polo",
+    description: "Moisture-wicking polo shirt",
+    price: 59.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/womens-golf-polo-shirt.png",
+    inStock: true,
+  },
+  {
+    id: 5,
+    name: "Golf Glove Set",
+    description: "Premium leather golf gloves",
+    price: 24.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/golf-gloves.png",
+    inStock: false,
+  },
+  {
+    id: 6,
+    name: "Women's Golf Shoes",
+    description: "Lightweight and comfortable",
+    price: 149.99,
+    category: "Shoes",
+    gender: "Women's",
+    image: "/womens-golf-shoes.png",
+    inStock: true,
+  },
+  {
+    id: 7,
+    name: "Golf Bag",
+    description: "Spacious cart bag with multiple pockets",
+    price: 199.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/golf-cart-bag.png",
+    inStock: true,
+  },
+  {
+    id: 8,
+    name: "Women's Golf Skirt",
+    description: "Athletic golf skirt with built-in shorts",
+    price: 69.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/womens-golf-skirt.png",
+    inStock: false,
+  },
+]
 
 export default function Products() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [showRequestModal, setShowRequestModal] = useState(false)
+  const [requestForm, setRequestForm] = useState({
+    name: "",
+    memberNumber: "",
+    email: "",
+    pickupDate: "",
+  })
+  const [showConfirmation, setShowConfirmation] = useState(false)
+
+  const categories = ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"]
+
+  // Filter products based on search and category
+  const filteredProducts = PRODUCTS.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory || product.gender === selectedCategory
+    return matchesSearch && matchesCategory
+  })
+
+  const handleAddToCart = (product) => {
+    // Cart functionality would be implemented here
+    console.log("Added to cart:", product)
+  }
+
+  const handleRequestOrder = (product) => {
+    setSelectedProduct(product)
+    setShowRequestModal(true)
+  }
+
+  const handleRequestSubmit = (e) => {
+    e.preventDefault()
+    setShowRequestModal(false)
+    setShowConfirmation(true)
+    setRequestForm({ name: "", memberNumber: "", email: "", pickupDate: "" })
+    setTimeout(() => setShowConfirmation(false), 3000)
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
+      {/* Header */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-6 py-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">{SITE.title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-green-800">{SITE.title}</h1>
           <nav className="flex gap-6 text-sm">
             {SITE.nav.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-gray-600 hover:text-green-600 transition-colors font-medium"
+              >
+                {item.label}
+              </a>
             ))}
           </nav>
         </div>
       </header>
 
-      <section className="container mx-auto px-6 py-16">
-        <h2 className="heading-1">Products</h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Product cards will go here */}
-          <div className="bg-white p-6 rounded-lg card-shadow">
-            <div className="h-48 bg-gray-200 rounded mb-4"></div>
-            <h3 className="heading-3">Product Name</h3>
-            <p className="mt-2 text-gray-600">$99.99</p>
-            <a href="/product" className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              View Details
-            </a>
-          </div>
+      <div className="container mx-auto px-6 py-8">
+        {/* Page Title */}
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Golf Products</h2>
+
+        {/* Search Bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search for golf gear…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          />
         </div>
-      </section>
+
+        {/* Category Filters */}
+        <div className="mb-8 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              variant={selectedCategory === category ? "primary" : "outline"}
+              className="text-sm"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+
+        {/* Product Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.map((product) => (
+            <Card key={product.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <div onClick={() => setSelectedProduct(product)}>
+                <img
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <CardContent>
+                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                <p className="text-gray-600 text-sm mb-3">{product.description}</p>
+                <p className="text-xl font-bold text-green-600 mb-3">${product.price}</p>
+
+                {/* Stock Status */}
+                <div className="flex items-center mb-4">
+                  <span
+                    className={`inline-block w-3 h-3 rounded-full mr-2 ${product.inStock ? "bg-green-500" : "bg-red-500"}`}
+                  ></span>
+                  <span className={`text-sm font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}>
+                    {product.inStock ? "In Stock" : "Not in Stock"}
+                  </span>
+                </div>
+
+                {/* Action Button */}
+                {product.inStock ? (
+                  <Button onClick={() => handleAddToCart(product)} className="w-full">
+                    Add to Cart
+                  </Button>
+                ) : (
+                  <Button onClick={() => handleRequestOrder(product)} variant="secondary" className="w-full">
+                    Request Order
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* No Results */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Product Detail Modal */}
+      <Modal isOpen={selectedProduct && !showRequestModal} onClose={() => setSelectedProduct(null)}>
+        {selectedProduct && (
+          <div className="p-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <img
+                src={selectedProduct.image || "/placeholder.svg"}
+                alt={selectedProduct.name}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+              <div>
+                <h3 className="text-2xl font-bold mb-4">{selectedProduct.name}</h3>
+                <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+                <p className="text-3xl font-bold text-green-600 mb-4">${selectedProduct.price}</p>
+
+                {/* Stock Status */}
+                <div className="flex items-center mb-6">
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full mr-3 ${selectedProduct.inStock ? "bg-green-500" : "bg-red-500"}`}
+                  ></span>
+                  <span
+                    className={`text-lg font-medium ${selectedProduct.inStock ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {selectedProduct.inStock ? "In Stock" : "Not in Stock"}
+                  </span>
+                </div>
+
+                {/* Action Button */}
+                {selectedProduct.inStock ? (
+                  <Button
+                    onClick={() => {
+                      handleAddToCart(selectedProduct)
+                      setSelectedProduct(null)
+                    }}
+                    className="w-full text-lg py-3"
+                  >
+                    Add to Cart
+                  </Button>
+                ) : (
+                  <Button onClick={() => setShowRequestModal(true)} variant="secondary" className="w-full text-lg py-3">
+                    Request This Item
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Request Form Modal */}
+      <Modal isOpen={showRequestModal} onClose={() => setShowRequestModal(false)}>
+        <div className="p-6">
+          <h3 className="text-2xl font-bold mb-6">Request Item</h3>
+          {selectedProduct && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <p className="font-medium">Requesting: {selectedProduct.name}</p>
+              <p className="text-gray-600">${selectedProduct.price}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleRequestSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input
+                type="text"
+                required
+                value={requestForm.name}
+                onChange={(e) => setRequestForm({ ...requestForm, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Member Number</label>
+              <input
+                type="text"
+                required
+                value={requestForm.memberNumber}
+                onChange={(e) => setRequestForm({ ...requestForm, memberNumber: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                required
+                value={requestForm.email}
+                onChange={(e) => setRequestForm({ ...requestForm, email: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Pickup Date</label>
+              <input
+                type="date"
+                required
+                value={requestForm.pickupDate}
+                onChange={(e) => setRequestForm({ ...requestForm, pickupDate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" className="flex-1">
+                Submit Request
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setShowRequestModal(false)} className="flex-1">
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      {/* Confirmation Message */}
+      {showConfirmation && (
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+          Request Received!
+        </div>
+      )}
     </main>
-  );
+  )
 }
