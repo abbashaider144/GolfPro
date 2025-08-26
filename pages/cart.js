@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 // Inline components
 const Button = ({ children, onClick, className = "", disabled = false, type = "button" }) => (
@@ -58,56 +58,8 @@ const SITE = {
 }
 
 export default function Cart() {
-  // Sample cart items (hardcoded as requested)
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "TaylorMade Driver",
-      price: 449.99,
-      quantity: 1,
-      image: "/golf-driver-club.png",
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Nike Golf Shoes",
-      price: 129.99,
-      quantity: 2,
-      image: "/mens-golf-shoes.png",
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "Callaway Iron Set",
-      price: 899.99,
-      quantity: 1,
-      image: "/golf-iron-set.png",
-      inStock: true,
-    },
-  ])
-
-  // Sample requested items (hardcoded as requested)
-  const [requestedItems] = useState([
-    {
-      id: 1,
-      name: "Limited Edition Putter",
-      price: 299.99,
-      status: "Pending",
-      requestDate: "2024-01-15",
-      estimatedArrival: "2024-02-01",
-      image: "/golf-putter.png",
-    },
-    {
-      id: 2,
-      name: "Premium Golf Bag",
-      price: 199.99,
-      status: "Ordered",
-      requestDate: "2024-01-10",
-      estimatedArrival: "2024-01-25",
-      image: "/golf-cart-bag.png",
-    },
-  ])
-
+  const [cartItems, setCartItems] = useState([])
+  const [requestedItems, setRequestedItems] = useState([])
   const [showCheckout, setShowCheckout] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [checkoutForm, setCheckoutForm] = useState({
@@ -117,13 +69,49 @@ export default function Cart() {
     pickupDate: "",
   })
 
+  useEffect(() => {
+    const loadCartData = () => {
+      const savedCart = localStorage.getItem("golfShopCart")
+      const savedRequests = localStorage.getItem("golfShopRequests")
+
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart))
+      }
+
+      if (savedRequests) {
+        setRequestedItems(JSON.parse(savedRequests))
+      }
+    }
+
+    loadCartData()
+
+    // Listen for storage changes (when items are added from other pages)
+    const handleStorageChange = () => {
+      loadCartData()
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+
+    // Also listen for custom events when localStorage is updated from same page
+    window.addEventListener("cartUpdated", handleStorageChange)
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("cartUpdated", handleStorageChange)
+    }
+  }, [])
+
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return
-    setCartItems((items) => items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
+    const updatedItems = cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
+    setCartItems(updatedItems)
+    localStorage.setItem("golfShopCart", JSON.stringify(updatedItems))
   }
 
   const removeItem = (id) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
+    const updatedItems = cartItems.filter((item) => item.id !== id)
+    setCartItems(updatedItems)
+    localStorage.setItem("golfShopCart", JSON.stringify(updatedItems))
   }
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -178,6 +166,7 @@ export default function Cart() {
               onClick={() => {
                 setShowConfirmation(false)
                 setCartItems([])
+                localStorage.setItem("golfShopCart", JSON.stringify([]))
                 setCheckoutForm({ name: "", memberNumber: "", email: "", pickupDate: "" })
               }}
               className="bg-green-600 text-white px-8 py-3"

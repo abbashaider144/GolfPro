@@ -158,7 +158,52 @@ export default function Products() {
     email: "",
     pickupDate: "",
   })
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showRequestConfirmation, setShowRequestConfirmation] = useState(false)
+  const [notification, setNotification] = useState(null)
+
+  const getCartItems = () => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("golfShopCart")
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  }
+
+  const getRequestedItems = () => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("golfShopRequests")
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  }
+
+  const addToCart = (product) => {
+    const cartItems = getCartItems()
+    const existingItem = cartItems.find((item) => item.id === product.id)
+
+    let updatedCart
+    if (existingItem) {
+      updatedCart = cartItems.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item))
+    } else {
+      updatedCart = [...cartItems, { ...product, quantity: 1 }]
+    }
+
+    localStorage.setItem("golfShopCart", JSON.stringify(updatedCart))
+  }
+
+  const addToRequests = (product, formData) => {
+    const requestedItems = getRequestedItems()
+    const newRequest = {
+      ...product,
+      requestDate: new Date().toISOString().split("T")[0],
+      status: "Pending",
+      estimatedArrival: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 2 weeks from now
+      customerInfo: formData,
+    }
+
+    const updatedRequests = [...requestedItems, newRequest]
+    localStorage.setItem("golfShopRequests", JSON.stringify(updatedRequests))
+  }
 
   const categories = ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"]
 
@@ -173,8 +218,13 @@ export default function Products() {
   })
 
   const handleAddToCart = (product) => {
-    // Cart functionality would be implemented here
-    console.log("Added to cart:", product)
+    addToCart(product)
+    setNotification({
+      type: "cart",
+      product: product,
+      message: `${product.name} added to cart!`,
+    })
+    setTimeout(() => setNotification(null), 4000)
   }
 
   const handleRequestOrder = (product) => {
@@ -184,10 +234,27 @@ export default function Products() {
 
   const handleRequestSubmit = (e) => {
     e.preventDefault()
+    addToRequests(selectedProduct, requestForm)
     setShowRequestModal(false)
-    setShowConfirmation(true)
+    setShowRequestConfirmation(true)
     setRequestForm({ name: "", memberNumber: "", email: "", pickupDate: "" })
-    setTimeout(() => setShowConfirmation(false), 3000)
+  }
+
+  const handleConfirmationClose = () => {
+    setShowRequestConfirmation(false)
+    setSelectedProduct(null)
+    setNotification({
+      type: "request",
+      product: selectedProduct,
+      message: `${selectedProduct.name} request submitted!`,
+    })
+    setTimeout(() => setNotification(null), 4000)
+  }
+
+  const getMinDate = () => {
+    const today = new Date()
+    today.setDate(today.getDate() + 3)
+    return today.toISOString().split("T")[0]
   }
 
   return (
@@ -387,10 +454,12 @@ export default function Products() {
               <input
                 type="date"
                 required
+                min={getMinDate()}
                 value={requestForm.pickupDate}
                 onChange={(e) => setRequestForm({ ...requestForm, pickupDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
+              <p className="text-xs text-gray-500 mt-1">Minimum 3 days from today</p>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -405,12 +474,159 @@ export default function Products() {
         </div>
       </Modal>
 
-      {/* Confirmation Message */}
-      {showConfirmation && (
-        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
-          Request Received!
+      {/* Request Confirmation Modal */}
+      <Modal isOpen={showRequestConfirmation} onClose={handleConfirmationClose}>
+        <div className="p-6 text-center">
+          <div className="mb-6">
+            <svg
+              className="w-16 h-16 text-green-500 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Request Submitted Successfully!</h3>
+            <p className="text-gray-600 mb-4">
+              Thank you for your request. The pro shop will contact you shortly to confirm availability and pickup
+              details.
+            </p>
+          </div>
+
+          {selectedProduct && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <img
+                  src={selectedProduct.image || "/placeholder.svg"}
+                  alt={selectedProduct.name}
+                  className="w-12 h-12 rounded object-cover mr-3"
+                />
+                <div>
+                  <p className="font-medium text-left">{selectedProduct.name}</p>
+                  <p className="text-gray-600 text-left">${selectedProduct.price}</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">Expected processing time: 1-2 business days</p>
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <Button onClick={handleConfirmationClose} className="flex-1">
+              Continue Shopping
+            </Button>
+            <Button variant="outline" onClick={() => (window.location.href = "/cart")} className="flex-1">
+              View Cart
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {notification && (
+        <div className="fixed top-4 right-4 z-50 animate-slide-in">
+          <div className="bg-white rounded-lg shadow-xl border-l-4 border-green-500 p-4 max-w-sm">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                {notification.type === "cart" ? (
+                  <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h12.6M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"
+                    />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div className="ml-3 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-gray-900">
+                    {notification.type === "cart" ? "Added to Cart!" : "Request Submitted!"}
+                  </p>
+                  <button onClick={() => setNotification(null)} className="text-gray-400 hover:text-gray-600">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="mt-1 flex items-center">
+                  <img
+                    src={notification.product.image || "/placeholder.svg"}
+                    alt={notification.product.name}
+                    className="w-8 h-8 rounded object-cover mr-2"
+                  />
+                  <div>
+                    <p className="text-sm text-gray-700 font-medium">{notification.product.name}</p>
+                    <p className="text-xs text-gray-500">${notification.product.price}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <a
+                    href="/cart"
+                    className="text-xs bg-green-600 text-white px-3 py-1 rounded-full hover:bg-green-700 transition-colors"
+                  >
+                    View Cart
+                  </a>
+                  {notification.type === "cart" && (
+                    <button
+                      onClick={() => handleAddToCart(notification.product)}
+                      className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
+                    >
+                      Add Another
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Progress bar */}
+            <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+              <div className="bg-green-500 h-1 rounded-full animate-progress"></div>
+            </div>
+          </div>
         </div>
       )}
     </main>
   )
 }
+;<style jsx>{`
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes progress {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+  
+  .animate-progress {
+    animation: progress 4s linear;
+  }
+`}</style>
