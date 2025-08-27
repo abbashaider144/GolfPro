@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 // Inline Button component
 const Button = ({ children, onClick, className = "", disabled = false, variant = "primary" }) => {
@@ -62,8 +62,8 @@ const SITE = {
   ],
 }
 
-// Sample golf products data
 const PRODUCTS = [
+  // Clubs - Men's
   {
     id: 1,
     name: "TaylorMade Driver",
@@ -73,16 +73,6 @@ const PRODUCTS = [
     gender: "Men's",
     image: "/golf-driver-club.png",
     inStock: true,
-  },
-  {
-    id: 2,
-    name: "Nike Golf Shoes",
-    description: "Comfortable and stylish golf shoes",
-    price: 129.99,
-    category: "Shoes",
-    gender: "Men's",
-    image: "/mens-golf-shoes.png",
-    inStock: false,
   },
   {
     id: 3,
@@ -95,6 +85,186 @@ const PRODUCTS = [
     inStock: true,
   },
   {
+    id: 9,
+    name: "Ping Putter",
+    description: "Precision putter for better putting control",
+    price: 249.99,
+    category: "Clubs",
+    gender: "Men's",
+    image: "/ping-putter-golf-club.png",
+    inStock: false,
+  },
+  {
+    id: 10,
+    name: "Titleist Wedge Set",
+    description: "Complete wedge set for short game mastery",
+    price: 449.99,
+    category: "Clubs",
+    gender: "Men's",
+    image: "/titleist-golf-wedge-set.png",
+    inStock: true,
+  },
+  {
+    id: 11,
+    name: "Cobra Hybrid Club",
+    description: "Versatile hybrid for various course conditions",
+    price: 189.99,
+    category: "Clubs",
+    gender: "Men's",
+    image: "/cobra-hybrid-golf-club.png",
+    inStock: true,
+  },
+
+  // Clubs - Women's
+  {
+    id: 12,
+    name: "Women's TaylorMade Driver",
+    description: "Lightweight driver designed for women golfers",
+    price: 369.99,
+    category: "Clubs",
+    gender: "Women's",
+    image: "/womens-taylormade-driver-pink.png",
+    inStock: false,
+  },
+  {
+    id: 13,
+    name: "Women's Callaway Iron Set",
+    description: "Complete iron set with enhanced forgiveness",
+    price: 699.99,
+    category: "Clubs",
+    gender: "Women's",
+    image: "/womens-callaway-iron-set.png",
+    inStock: true,
+  },
+  {
+    id: 14,
+    name: "Women's Ping Putter",
+    description: "Stylish putter with improved alignment",
+    price: 229.99,
+    category: "Clubs",
+    gender: "Women's",
+    image: "/womens-ping-putter-golf.png",
+    inStock: true,
+  },
+
+  // Shoes - Men's
+  {
+    id: 2,
+    name: "Nike Golf Shoes",
+    description: "Comfortable and stylish golf shoes",
+    price: 129.99,
+    category: "Shoes",
+    gender: "Men's",
+    image: "/mens-golf-shoes.png",
+    inStock: false,
+  },
+  {
+    id: 15,
+    name: "Adidas Golf Spikes",
+    description: "Professional golf shoes with superior grip",
+    price: 159.99,
+    category: "Shoes",
+    gender: "Men's",
+    image: "/adidas-mens-golf-shoes-spikes.png",
+    inStock: true,
+  },
+  {
+    id: 16,
+    name: "FootJoy Pro SL",
+    description: "Premium leather golf shoes for comfort",
+    price: 199.99,
+    category: "Shoes",
+    gender: "Men's",
+    image: "/footjoy-pro-sl-mens-golf-shoes.png",
+    inStock: true,
+  },
+  {
+    id: 17,
+    name: "Under Armour Spieth 5",
+    description: "Tour-inspired golf shoes with modern design",
+    price: 179.99,
+    category: "Shoes",
+    gender: "Men's",
+    image: "/under-armour-spieth-golf-shoes.png",
+    inStock: false,
+  },
+
+  // Shoes - Women's
+  {
+    id: 6,
+    name: "Women's Golf Shoes",
+    description: "Lightweight and comfortable",
+    price: 149.99,
+    category: "Shoes",
+    gender: "Women's",
+    image: "/womens-golf-shoes.png",
+    inStock: true,
+  },
+  {
+    id: 18,
+    name: "Women's Adidas Golf Shoes",
+    description: "Stylish and supportive golf footwear",
+    price: 139.99,
+    category: "Shoes",
+    gender: "Women's",
+    image: "/womens-adidas-golf-shoes-white-pink.png",
+    inStock: true,
+  },
+  {
+    id: 19,
+    name: "Women's FootJoy Traditions",
+    description: "Classic golf shoes with modern comfort",
+    price: 169.99,
+    category: "Shoes",
+    gender: "Women's",
+    image: "/womens-footjoy-traditions-golf-shoes.png",
+    inStock: false,
+  },
+
+  // Apparel - Men's
+  {
+    id: 20,
+    name: "Men's Golf Polo",
+    description: "Moisture-wicking performance polo",
+    price: 49.99,
+    category: "Apparel",
+    gender: "Men's",
+    image: "/mens-golf-polo-shirt-blue.png",
+    inStock: true,
+  },
+  {
+    id: 21,
+    name: "Men's Golf Shorts",
+    description: "Comfortable golf shorts with stretch fabric",
+    price: 59.99,
+    category: "Apparel",
+    gender: "Men's",
+    image: "/mens-golf-shorts-khaki.png",
+    inStock: true,
+  },
+  {
+    id: 22,
+    name: "Men's Golf Jacket",
+    description: "Windproof golf jacket for cool weather",
+    price: 89.99,
+    category: "Apparel",
+    gender: "Men's",
+    image: "/mens-golf-windbreaker-jacket.png",
+    inStock: false,
+  },
+  {
+    id: 23,
+    name: "Men's Golf Pants",
+    description: "Professional golf pants with modern fit",
+    price: 79.99,
+    category: "Apparel",
+    gender: "Men's",
+    image: "/mens-golf-pants-navy.png",
+    inStock: true,
+  },
+
+  // Apparel - Women's
+  {
     id: 4,
     name: "Women's Golf Polo",
     description: "Moisture-wicking polo shirt",
@@ -105,6 +275,48 @@ const PRODUCTS = [
     inStock: true,
   },
   {
+    id: 8,
+    name: "Women's Golf Skirt",
+    description: "Athletic golf skirt with built-in shorts",
+    price: 69.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/womens-golf-skirt.png",
+    inStock: false,
+  },
+  {
+    id: 24,
+    name: "Women's Golf Dress",
+    description: "Elegant golf dress for tournament play",
+    price: 89.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 25,
+    name: "Women's Golf Cardigan",
+    description: "Lightweight cardigan for layering",
+    price: 79.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: false,
+  },
+  {
+    id: 26,
+    name: "Women's Golf Capris",
+    description: "Comfortable capri pants for warm weather",
+    price: 64.99,
+    category: "Apparel",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+
+  // Accessories - General
+  {
     id: 5,
     name: "Golf Glove Set",
     description: "Premium leather golf gloves",
@@ -113,16 +325,6 @@ const PRODUCTS = [
     gender: "Men's",
     image: "/golf-gloves.png",
     inStock: false,
-  },
-  {
-    id: 6,
-    name: "Women's Golf Shoes",
-    description: "Lightweight and comfortable",
-    price: 149.99,
-    category: "Shoes",
-    gender: "Women's",
-    image: "/womens-golf-shoes.png",
-    inStock: true,
   },
   {
     id: 7,
@@ -135,14 +337,124 @@ const PRODUCTS = [
     inStock: true,
   },
   {
-    id: 8,
-    name: "Women's Golf Skirt",
-    description: "Athletic golf skirt with built-in shorts",
-    price: 69.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/womens-golf-skirt.png",
+    id: 27,
+    name: "Golf Ball Set",
+    description: "Premium golf balls for better performance",
+    price: 39.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 28,
+    name: "Golf Tees Pack",
+    description: "Wooden and plastic tees variety pack",
+    price: 12.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 29,
+    name: "Golf Towel",
+    description: "Microfiber golf towel with clip attachment",
+    price: 19.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
     inStock: false,
+  },
+  {
+    id: 30,
+    name: "Golf Umbrella",
+    description: "Large golf umbrella for weather protection",
+    price: 34.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 31,
+    name: "Golf Rangefinder",
+    description: "Laser rangefinder for accurate distance measurement",
+    price: 249.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: false,
+  },
+  {
+    id: 32,
+    name: "Golf GPS Watch",
+    description: "GPS watch with course mapping and scoring",
+    price: 299.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 33,
+    name: "Women's Golf Gloves",
+    description: "Soft leather gloves designed for women",
+    price: 22.99,
+    category: "Accessories",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 34,
+    name: "Women's Golf Bag",
+    description: "Lightweight stand bag with stylish design",
+    price: 179.99,
+    category: "Accessories",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: false,
+  },
+  {
+    id: 35,
+    name: "Golf Ball Marker Set",
+    description: "Decorative ball markers with magnetic hat clip",
+    price: 16.99,
+    category: "Accessories",
+    gender: "Women's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 36,
+    name: "Golf Club Headcovers",
+    description: "Protective headcovers for drivers and woods",
+    price: 29.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
+  },
+  {
+    id: 37,
+    name: "Golf Scorecard Holder",
+    description: "Leather scorecard holder with pencil",
+    price: 24.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: false,
+  },
+  {
+    id: 38,
+    name: "Golf Divot Tool",
+    description: "Premium divot repair tool with ball marker",
+    price: 14.99,
+    category: "Accessories",
+    gender: "Men's",
+    image: "/placeholder.svg?height=200&width=200",
+    inStock: true,
   },
 ]
 
@@ -159,6 +471,18 @@ export default function Products() {
   })
   const [showRequestConfirmation, setShowRequestConfirmation] = useState(false)
   const [notification, setNotification] = useState(null)
+
+  const categories = ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"]
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search)
+      const categoryParam = urlParams.get("category")
+      if (categoryParam && categories.includes(categoryParam)) {
+        setSelectedCategory(categoryParam)
+      }
+    }
+  }, [])
 
   const getCartItems = () => {
     if (typeof window !== "undefined") {
@@ -203,8 +527,6 @@ export default function Products() {
     const updatedRequests = [...requestedItems, newRequest]
     localStorage.setItem("golfShopRequests", JSON.stringify(updatedRequests))
   }
-
-  const categories = ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"]
 
   // Filter products based on search and category
   const filteredProducts = PRODUCTS.filter((product) => {
@@ -319,7 +641,19 @@ export default function Products() {
               <CardContent>
                 <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-3">{product.description}</p>
-                <p className="text-xl font-bold text-green-600 mb-3">${product.price}</p>
+                {product.inStock ? (
+                  <p className="text-xl font-bold text-green-600 mb-3">${product.price}</p>
+                ) : (
+                  <div className="mb-3">
+                    <p className="text-lg text-gray-400 line-through">${product.price}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl font-bold text-red-600">${(product.price * 0.85).toFixed(2)}</p>
+                      <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full">
+                        15% OFF
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Stock Status */}
                 <div className="flex items-center mb-4">
@@ -367,7 +701,20 @@ export default function Products() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">{selectedProduct.name}</h3>
                 <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
-                <p className="text-3xl font-bold text-green-600 mb-4">${selectedProduct.price}</p>
+                {selectedProduct.inStock ? (
+                  <p className="text-3xl font-bold text-green-600 mb-4">${selectedProduct.price}</p>
+                ) : (
+                  <div className="mb-4">
+                    <p className="text-xl text-gray-400 line-through">${selectedProduct.price}</p>
+                    <div className="flex items-center gap-3">
+                      <p className="text-3xl font-bold text-red-600">${(selectedProduct.price * 0.85).toFixed(2)}</p>
+                      <span className="bg-red-100 text-red-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        15% OFF REQUEST SPECIAL
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">Special discount applied for requested items!</p>
+                  </div>
+                )}
 
                 {/* Stock Status */}
                 <div className="flex items-center mb-6">
@@ -410,7 +757,11 @@ export default function Products() {
           {selectedProduct && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
               <p className="font-medium">Requesting: {selectedProduct.name}</p>
-              <p className="text-gray-600">${selectedProduct.price}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-gray-400 line-through text-sm">${selectedProduct.price}</p>
+                <p className="text-red-600 font-semibold">${(selectedProduct.price * 0.85).toFixed(2)}</p>
+                <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full">15% OFF</span>
+              </div>
             </div>
           )}
 
@@ -507,10 +858,14 @@ export default function Products() {
                 />
                 <div>
                   <p className="font-medium text-left">{selectedProduct.name}</p>
-                  <p className="text-gray-600 text-left">${selectedProduct.price}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-400 line-through text-sm">${selectedProduct.price}</p>
+                    <p className="text-red-600 font-semibold">${(selectedProduct.price * 0.85).toFixed(2)}</p>
+                  </div>
                 </div>
               </div>
               <p className="text-sm text-gray-500">Expected processing time: 1-2 business days</p>
+              <p className="text-sm text-red-600 font-medium">15% discount applied for requested items!</p>
             </div>
           )}
 

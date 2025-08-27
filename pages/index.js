@@ -1,3 +1,5 @@
+"use client"
+
 // Simple Button component
 function Button({ children, className = "", size = "default", variant = "default", ...props }) {
   const baseClasses =
@@ -96,7 +98,88 @@ const SITE = {
   ],
 }
 
+import { useState } from "react"
+
 export default function Home() {
+  const [showDiscountModal, setShowDiscountModal] = useState(false)
+  const [notification, setNotification] = useState(null)
+
+  const addToCart = (product) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]")
+    const existingItem = cartItems.find((item) => item.id === product.id)
+
+    if (existingItem) {
+      existingItem.quantity += 1
+    } else {
+      cartItems.push({ ...product, quantity: 1 })
+    }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems))
+    showNotification(`${product.name} added to cart!`, "cart", product)
+  }
+
+  const requestItem = (product) => {
+    const requestedItems = JSON.parse(localStorage.getItem("requestedItems") || "[]")
+    const discountedPrice = (product.price * 0.85).toFixed(2) // 15% discount
+    const requestedProduct = {
+      ...product,
+      price: Number.parseFloat(discountedPrice),
+      originalPrice: product.price,
+      discount: 15,
+      requestDate: new Date().toISOString(),
+      estimatedArrival: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      status: "Processing",
+    }
+
+    const existingItem = requestedItems.find((item) => item.id === product.id)
+    if (!existingItem) {
+      requestedItems.push(requestedProduct)
+      localStorage.setItem("requestedItems", JSON.stringify(requestedItems))
+    }
+
+    showNotification(`${product.name} requested with 15% discount!`, "request", requestedProduct)
+  }
+
+  const showNotification = (message, type, product) => {
+    setNotification({ message, type, product })
+    setTimeout(() => setNotification(null), 4000)
+  }
+
+  const navigateToCategory = (category) => {
+    window.location.href = `/products?category=${category.toLowerCase()}`
+  }
+
+  const featuredProducts = [
+    {
+      id: 1,
+      name: "TaylorMade Driver",
+      price: 399.99,
+      image: "/golf-driver-club.png",
+      inStock: true,
+    },
+    {
+      id: 2,
+      name: "Nike Golf Shoes",
+      price: 149.99,
+      image: "/golf-shoes.png",
+      inStock: false,
+    },
+    {
+      id: 3,
+      name: "Premium Golf Polo",
+      price: 79.99,
+      image: "/golf-polo-shirt.png",
+      inStock: true,
+    },
+    {
+      id: 4,
+      name: "Leather Golf Glove",
+      price: 24.99,
+      image: "/golf-glove.png",
+      inStock: false,
+    },
+  ]
+
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -126,7 +209,11 @@ export default function Home() {
           <div className="max-w-2xl text-white">
             <h1 className="text-5xl font-bold mb-4">Welcome to Shuswap Lake Golf Course Pro Shop</h1>
             <p className="text-xl mb-8">Get the golf gear you want—even if it's not in stock.</p>
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg">
+            <Button
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg"
+              onClick={() => setShowDiscountModal(true)}
+            >
               Find or Request Gear
             </Button>
           </div>
@@ -137,7 +224,7 @@ export default function Home() {
       <section className="container mx-auto px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-12">Shop by Category</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="text-center group cursor-pointer">
+          <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Clubs")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
               <img
                 src="/golf-clubs-icon.png"
@@ -150,7 +237,7 @@ export default function Home() {
             </div>
             <h3 className="font-semibold text-lg">Clubs</h3>
           </div>
-          <div className="text-center group cursor-pointer">
+          <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Shoes")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
               <img
                 src="/golf-shoes-icon.png"
@@ -163,7 +250,7 @@ export default function Home() {
             </div>
             <h3 className="font-semibold text-lg">Shoes</h3>
           </div>
-          <div className="text-center group cursor-pointer">
+          <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Apparel")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
               <img
                 src="/golf-apparel-icon.png"
@@ -176,7 +263,7 @@ export default function Home() {
             </div>
             <h3 className="font-semibold text-lg">Apparel</h3>
           </div>
-          <div className="text-center group cursor-pointer">
+          <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Accessories")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
               <img
                 src="/golf-accessories-icon.png"
@@ -226,95 +313,48 @@ export default function Home() {
       <section className="container mx-auto px-6 py-16">
         <h2 className="text-3xl font-bold text-center mb-12">Featured Items</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="p-4">
-              <img
-                src="/golf-driver-club.png"
-                alt="TaylorMade Driver"
-                className="w-full h-48 object-cover rounded mb-4"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300x192/22c55e/ffffff?text=Golf+Driver"
-                }}
-              />
-              <h3 className="font-semibold text-lg mb-2">TaylorMade Driver</h3>
-              <p className="text-2xl font-bold text-green-600 mb-2">$399.99</p>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-600 font-medium">In Stock</span>
-              </div>
-              <Button className="w-full bg-green-600 hover:bg-green-700">Add to Cart</Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <img
-                src="/golf-shoes.png"
-                alt="Nike Golf Shoes"
-                className="w-full h-48 object-cover rounded mb-4"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300x192/22c55e/ffffff?text=Golf+Shoes"
-                }}
-              />
-              <h3 className="font-semibold text-lg mb-2">Nike Golf Shoes</h3>
-              <p className="text-2xl font-bold text-green-600 mb-2">$149.99</p>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-red-600 font-medium">Not in Stock</span>
-              </div>
-              <Button
-                variant="outline"
-                className="w-full border-green-600 text-green-600 hover:bg-green-50 bg-transparent"
-              >
-                Request Order
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <img
-                src="/golf-polo-shirt.png"
-                alt="Golf Polo"
-                className="w-full h-48 object-cover rounded mb-4"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300x192/22c55e/ffffff?text=Golf+Polo"
-                }}
-              />
-              <h3 className="font-semibold text-lg mb-2">Premium Golf Polo</h3>
-              <p className="text-2xl font-bold text-green-600 mb-2">$79.99</p>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-600 font-medium">In Stock</span>
-              </div>
-              <Button className="w-full bg-green-600 hover:bg-green-700">Add to Cart</Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <img
-                src="/golf-glove.png"
-                alt="Golf Glove"
-                className="w-full h-48 object-cover rounded mb-4"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300x192/22c55e/ffffff?text=Golf+Glove"
-                }}
-              />
-              <h3 className="font-semibold text-lg mb-2">Leather Golf Glove</h3>
-              <p className="text-2xl font-bold text-green-600 mb-2">$24.99</p>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-red-600 font-medium">Not in Stock</span>
-              </div>
-              <Button
-                variant="outline"
-                className="w-full border-green-600 text-green-600 hover:bg-green-50 bg-transparent"
-              >
-                Request Order
-              </Button>
-            </CardContent>
-          </Card>
+          {featuredProducts.map((product) => (
+            <Card key={product.id}>
+              <CardContent className="p-4">
+                <img
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded mb-4"
+                  onError={(e) => {
+                    e.target.src = `https://via.placeholder.com/300x192/22c55e/ffffff?text=${product.name.replace(" ", "+")}`
+                  }}
+                />
+                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                {!product.inStock && (
+                  <div className="mb-2">
+                    <p className="text-lg text-gray-500 line-through">${product.price}</p>
+                    <p className="text-2xl font-bold text-green-600">${(product.price * 0.85).toFixed(2)}</p>
+                    <p className="text-sm text-green-600 font-medium">15% Request Discount!</p>
+                  </div>
+                )}
+                {product.inStock && <p className="text-2xl font-bold text-green-600 mb-2">${product.price}</p>}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-3 h-3 rounded-full ${product.inStock ? "bg-green-500" : "bg-red-500"}`}></div>
+                  <span className={`text-sm font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}>
+                    {product.inStock ? "In Stock" : "Not in Stock"}
+                  </span>
+                </div>
+                {product.inStock ? (
+                  <Button className="w-full bg-green-600 hover:bg-green-700" onClick={() => addToCart(product)}>
+                    Add to Cart
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="w-full border-green-600 text-green-600 hover:bg-green-50 bg-transparent"
+                    onClick={() => requestItem(product)}
+                  >
+                    Request Order
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
@@ -365,6 +405,107 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {showDiscountModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full transform animate-pulse">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎉</span>
+              </div>
+              <h3 className="text-2xl font-bold text-green-600 mb-4">Special Offer!</h3>
+              <p className="text-gray-600 mb-6">
+                Get 15% off on all requested gear items! Browse our products and request any out-of-stock items to
+                automatically receive this discount.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  onClick={() => {
+                    setShowDiscountModal(false)
+                    window.location.href = "/products"
+                  }}
+                >
+                  Shop Now
+                </Button>
+                <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowDiscountModal(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notification && (
+        <div className="fixed top-4 right-4 z-50 transform transition-all duration-300 ease-in-out animate-slide-in">
+          <div className="bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 max-w-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <img
+                  src={notification.product.image || "/placeholder.svg"}
+                  alt={notification.product.name}
+                  className="w-12 h-12 object-cover rounded"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/48x48/22c55e/ffffff?text=✓"
+                  }}
+                />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">{notification.message}</p>
+                <p className="text-sm text-gray-600">{notification.product.name}</p>
+                {notification.type === "request" && (
+                  <p className="text-sm text-green-600 font-medium">${notification.product.price} (15% off!)</p>
+                )}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200"
+                    onClick={() => (window.location.href = "/cart")}
+                  >
+                    View Cart
+                  </button>
+                  <button
+                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
+                    onClick={() => setNotification(null)}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 bg-gray-200 rounded-full h-1">
+              <div className="bg-green-500 h-1 rounded-full animate-progress"></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes progress {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+        .animate-progress {
+          animation: progress 4s linear;
+        }
+      `}</style>
     </main>
   )
 }
