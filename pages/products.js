@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 
 // Inline Button component
 const Button = ({ children, onClick, className = "", disabled = false, variant = "primary" }) => {
@@ -586,13 +587,13 @@ export default function Products() {
           <h1 className="text-2xl font-bold tracking-tight text-green-800">{SITE.title}</h1>
           <nav className="flex gap-6 text-sm">
             {SITE.nav.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className="text-gray-600 hover:text-green-600 transition-colors font-medium"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
@@ -873,9 +874,11 @@ export default function Products() {
             <Button onClick={handleConfirmationClose} className="flex-1">
               Continue Shopping
             </Button>
-            <Button variant="outline" onClick={() => (window.location.href = "/cart")} className="flex-1">
-              View Cart
-            </Button>
+            <Link href="/cart" className="flex-1">
+              <Button variant="outline" className="w-full bg-transparent">
+                View Cart
+              </Button>
+            </Link>
           </div>
         </div>
       </Modal>
@@ -928,12 +931,12 @@ export default function Products() {
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <a
+                  <Link
                     href="/cart"
                     className="text-xs bg-green-600 text-white px-3 py-1 rounded-full hover:bg-green-700 transition-colors"
                   >
                     View Cart
-                  </a>
+                  </Link>
                   {notification.type === "cart" && (
                     <button
                       onClick={() => handleAddToCart(notification.product)}

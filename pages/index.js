@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 // Simple Button component
 function Button({ children, className = "", size = "default", variant = "default", ...props }) {
   const baseClasses =
@@ -188,9 +190,9 @@ export default function Home() {
           <h1 className="text-2xl font-bold tracking-tight">{SITE.title}</h1>
           <nav className="flex gap-6 text-sm">
             {SITE.nav.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link">
+              <Link key={item.href} href={item.href} className="nav-link">
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
@@ -382,15 +384,15 @@ export default function Home() {
             <div>
               <h3 className="text-xl font-bold mb-4">Quick Links</h3>
               <div className="space-y-2">
-                <a href="#" className="block hover:text-green-400">
+                <Link href="/products" className="block hover:text-green-400">
                   Products
-                </a>
-                <a href="#" className="block hover:text-green-400">
+                </Link>
+                <Link href="/request" className="block hover:text-green-400">
                   Request Gear
-                </a>
-                <a href="#" className="block hover:text-green-400">
+                </Link>
+                <Link href="/contact" className="block hover:text-green-400">
                   Contact Us
-                </a>
+                </Link>
               </div>
             </div>
             <div>
@@ -458,12 +460,12 @@ export default function Home() {
                   <p className="text-sm text-green-600 font-medium">${notification.product.price} (15% off!)</p>
                 )}
                 <div className="flex gap-2 mt-2">
-                  <button
+                  <Link
+                    href="/cart"
                     className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200"
-                    onClick={() => (window.location.href = "/cart")}
                   >
                     View Cart
-                  </button>
+                  </Link>
                   <button
                     className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
                     onClick={() => setNotification(null)}

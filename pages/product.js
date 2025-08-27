@@ -1,4 +1,5 @@
-import { SITE } from '../constants/constants';
+import { SITE } from '../constants/constants'
+import Link from 'next/link'
 
 export default function ProductDetail() {
   return (
@@ -8,7 +9,9 @@ export default function ProductDetail() {
           <h1 className="text-2xl font-bold tracking-tight">{SITE.title}</h1>
           <nav className="flex gap-6 text-sm">
             {SITE.nav.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
+              <Link key={item.href} href={item.href} className="nav-link">
+                {item.label}
+              </Link>
             ))}
           </nav>
         </div>
@@ -26,7 +29,9 @@ export default function ProductDetail() {
             <div className="space-y-6">
               <h2 className="heading-1">Premium Golf Club</h2>
               <p className="text-2xl font-bold text-blue-600">$299.99</p>
-              <p className="body-large">Professional grade golf club with advanced technology for improved accuracy and distance.</p>
+              <p className="body-large">
+                Professional grade golf club with advanced technology for improved accuracy and distance.
+              </p>
               
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -38,15 +43,17 @@ export default function ProductDetail() {
                   </select>
                 </div>
                 
-                <a href="/cart" className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 block text-center">
+                <Link
+                  href="/cart"
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 block text-center"
+                >
                   Add to Cart
-                </a>
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </section>
     </main>
-  );
+  )
 }
-

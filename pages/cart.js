@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 
 // Inline components
 const Button = ({ children, onClick, className = "", disabled = false, type = "button" }) => (
@@ -145,9 +146,9 @@ export default function Cart() {
             <h1 className="text-2xl font-bold tracking-tight text-green-800">{SITE.title}</h1>
             <nav className="flex gap-6 text-sm">
               {SITE.nav.map((item) => (
-                <a key={item.href} href={item.href} className="text-gray-600 hover:text-green-800 transition-colors">
+                <Link key={item.href} href={item.href} className="text-gray-600 hover:text-green-800 transition-colors">
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -186,9 +187,9 @@ export default function Cart() {
           <h1 className="text-2xl font-bold tracking-tight text-green-800">{SITE.title}</h1>
           <nav className="flex gap-6 text-sm">
             {SITE.nav.map((item) => (
-              <a key={item.href} href={item.href} className="text-gray-600 hover:text-green-800 transition-colors">
+              <Link key={item.href} href={item.href} className="text-gray-600 hover:text-green-800 transition-colors">
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
