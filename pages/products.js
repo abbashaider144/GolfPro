@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 
 // Inline Button component
@@ -473,7 +473,7 @@ export default function Products() {
   const [showRequestConfirmation, setShowRequestConfirmation] = useState(false)
   const [notification, setNotification] = useState(null)
 
-  const categories = ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"]
+  const categories = useMemo(() => ["All", "Men's", "Women's", "Clubs", "Shoes", "Apparel", "Accessories"], [])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -987,5 +987,5 @@ export default function Products() {
   .animate-progress {
     animation: progress 4s linear;
   }
-`}
+  `}
 </style>
