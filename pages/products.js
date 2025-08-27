@@ -955,37 +955,37 @@ export default function Products() {
           </div>
         </div>
       )}
+
+      {/* moved style block inside the returned JSX so it's syntactically valid */}
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes progress {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+        
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+        
+        .animate-progress {
+          animation: progress 4s linear;
+        }
+      `}</style>
     </main>
   )
 }
-;<style jsx>
-  {`
-  @keyframes slide-in {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes progress {
-    from {
-      width: 100%;
-    }
-    to {
-      width: 0%;
-    }
-  }
-  
-  .animate-slide-in {
-    animation: slide-in 0.3s ease-out;
-  }
-  
-  .animate-progress {
-    animation: progress 4s linear;
-  }
-  `}
-</style>
