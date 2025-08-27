@@ -483,7 +483,7 @@ export default function Products() {
         setSelectedCategory(categoryParam)
       }
     }
-  }, [])
+  }, [categories])
 
   const getCartItems = () => {
     if (typeof window !== "undefined") {
@@ -958,7 +958,8 @@ export default function Products() {
     </main>
   )
 }
-;<style jsx>{`
+;<style jsx>
+  {`
   @keyframes slide-in {
     from {
       transform: translateX(100%);
@@ -986,4 +987,5 @@ export default function Products() {
   .animate-progress {
     animation: progress 4s linear;
   }
-`}</style>
+`}
+</style>
