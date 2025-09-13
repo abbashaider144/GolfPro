@@ -61,14 +61,13 @@ const Modal = ({ isOpen, onClose, children }) => {
   )
 }
 
+// Trimmed SITE nav — only Home, Products, Cart
 const SITE = {
   title: "Shuswap Lake Golf Course",
   nav: [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
     { href: "/cart", label: "Cart" },
-    { href: "/request", label: "Request Gear" },
-    { href: "/contact", label: "Contact" },
   ],
 }
 
@@ -384,9 +383,7 @@ export default function Products() {
                   <span
                     className={`inline-block w-4 h-4 rounded-full mr-3 ${selectedProduct.inStock ? "bg-green-500" : "bg-red-500"}`}
                   ></span>
-                  <span
-                    className={`text-lg font-medium ${selectedProduct.inStock ? "text-green-600" : "text-red-600"}`}
-                  >
+                  <span className={`text-lg font-medium ${selectedProduct.inStock ? "text-green-600" : "text-red-600"}`}>
                     {selectedProduct.inStock ? "In Stock" : "Not in Stock"}
                   </span>
                 </div>

@@ -1,6 +1,21 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
+import { useState } from "react"
+
+// --- Local Images ---
+import golfDriverClub from "../assets/golf-driver-club.png"
+import golfShoes from "../assets/golf-shoes.png"
+import golfPoloShirt from "../assets/golf-polo-shirt.png"
+import golfGlove from "../assets/golf-glove.png"
+
+import golfClubsIcon from "../assets/golf-clubs-icon.png"
+import golfShoesIcon from "../assets/golf-shoes-icon.png"
+import golfApparelIcon from "../assets/golf-apparel-icon.png"
+import golfAccessoriesIcon from "../assets/golf-accessories-icon.png"
+
+import placeholder from "../assets/placeholder.png"
 
 // Simple Button component
 function Button({ children, className = "", size = "default", variant = "default", ...props }) {
@@ -89,18 +104,15 @@ function Clock({ className = "w-4 h-4" }) {
   )
 }
 
+// UPDATED SITE nav — only Home, Products, Cart
 const SITE = {
   title: "Shuswap Lake Golf Course",
   nav: [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
     { href: "/cart", label: "Cart" },
-    { href: "/request", label: "Request Gear" },
-    { href: "/contact", label: "Contact" },
   ],
 }
-
-import { useState } from "react"
 
 export default function Home() {
   const [showDiscountModal, setShowDiscountModal] = useState(false)
@@ -156,28 +168,28 @@ export default function Home() {
       id: 1,
       name: "TaylorMade Driver",
       price: 399.99,
-      image: "/golf-driver-club.png",
+      image: golfDriverClub,
       inStock: true,
     },
     {
       id: 2,
       name: "Nike Golf Shoes",
       price: 149.99,
-      image: "/golf-shoes.png",
+      image: golfShoes,
       inStock: false,
     },
     {
       id: 3,
       name: "Premium Golf Polo",
       price: 79.99,
-      image: "/golf-polo-shirt.png",
+      image: golfPoloShirt,
       inStock: true,
     },
     {
       id: 4,
       name: "Leather Golf Glove",
       price: 24.99,
-      image: "/golf-glove.png",
+      image: golfGlove,
       inStock: false,
     },
   ]
@@ -228,52 +240,55 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Clubs")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <img
-                src="/golf-clubs-icon.png"
+              <Image
+                src={golfClubsIcon || placeholder}
                 alt="Clubs"
+                width={40}
+                height={40}
                 className="w-10 h-10"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/40x40/22c55e/ffffff?text=🏌️"
-                }}
+                style={{ objectFit: "cover" }}
               />
             </div>
             <h3 className="font-semibold text-lg">Clubs</h3>
           </div>
+
           <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Shoes")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <img
-                src="/golf-shoes-icon.png"
+              <Image
+                src={golfShoesIcon || placeholder}
                 alt="Shoes"
+                width={40}
+                height={40}
                 className="w-10 h-10"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/40x40/22c55e/ffffff?text=👟"
-                }}
+                style={{ objectFit: "cover" }}
               />
             </div>
             <h3 className="font-semibold text-lg">Shoes</h3>
           </div>
+
           <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Apparel")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <img
-                src="/golf-apparel-icon.png"
+              <Image
+                src={golfApparelIcon || placeholder}
                 alt="Apparel"
+                width={40}
+                height={40}
                 className="w-10 h-10"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/40x40/22c55e/ffffff?text=👕"
-                }}
+                style={{ objectFit: "cover" }}
               />
             </div>
             <h3 className="font-semibold text-lg">Apparel</h3>
           </div>
+
           <div className="text-center group cursor-pointer" onClick={() => navigateToCategory("Accessories")}>
             <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-              <img
-                src="/golf-accessories-icon.png"
+              <Image
+                src={golfAccessoriesIcon || placeholder}
                 alt="Accessories"
+                width={40}
+                height={40}
                 className="w-10 h-10"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/40x40/22c55e/ffffff?text=🧤"
-                }}
+                style={{ objectFit: "cover" }}
               />
             </div>
             <h3 className="font-semibold text-lg">Accessories</h3>
@@ -318,13 +333,13 @@ export default function Home() {
           {featuredProducts.map((product) => (
             <Card key={product.id}>
               <CardContent className="p-4">
-                <img
-                  src={product.image || "/placeholder.svg"}
+                <Image
+                  src={product.image || placeholder}
                   alt={product.name}
+                  width={600}
+                  height={360}
                   className="w-full h-48 object-cover rounded mb-4"
-                  onError={(e) => {
-                    e.target.src = `https://via.placeholder.com/300x192/22c55e/ffffff?text=${product.name.replace(" ", "+")}`
-                  }}
+                  style={{ objectFit: "cover" }}
                 />
                 <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                 {!product.inStock && (
@@ -444,13 +459,13 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 max-w-sm">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
-                <img
-                  src={notification.product.image || "/placeholder.svg"}
+                <Image
+                  src={notification.product.image || placeholder}
                   alt={notification.product.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 object-cover rounded"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/48x48/22c55e/ffffff?text=✓"
-                  }}
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               <div className="flex-1">

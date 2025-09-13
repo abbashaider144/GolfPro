@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
+
+// Local images - adjust paths if needed
+import placeholder from "../assets/placeholder.png"
 
 // Inline components
 const Button = ({ children, onClick, className = "", disabled = false, type = "button" }) => (
@@ -46,15 +50,13 @@ const CheckIcon = () => (
   </svg>
 )
 
-// SITE constants
+// SITE constants (trimmed to Home / Products / Cart)
 const SITE = {
   title: "Shuswap Lake Golf Course",
   nav: [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
     { label: "Cart", href: "/cart" },
-    { label: "Request Gear", href: "/request" },
-    { label: "Contact", href: "/contact" },
   ],
 }
 
@@ -76,24 +78,33 @@ export default function Cart() {
       const savedRequests = localStorage.getItem("golfShopRequests")
 
       if (savedCart) {
-        setCartItems(JSON.parse(savedCart))
+        try {
+          setCartItems(JSON.parse(savedCart))
+        } catch {
+          setCartItems([])
+        }
+      } else {
+        setCartItems([])
       }
 
       if (savedRequests) {
-        setRequestedItems(JSON.parse(savedRequests))
+        try {
+          setRequestedItems(JSON.parse(savedRequests))
+        } catch {
+          setRequestedItems([])
+        }
+      } else {
+        setRequestedItems([])
       }
     }
 
     loadCartData()
 
-    // Listen for storage changes (when items are added from other pages)
     const handleStorageChange = () => {
       loadCartData()
     }
 
     window.addEventListener("storage", handleStorageChange)
-
-    // Also listen for custom events when localStorage is updated from same page
     window.addEventListener("cartUpdated", handleStorageChange)
 
     return () => {
@@ -102,27 +113,56 @@ export default function Cart() {
     }
   }, [])
 
+  const persistCart = (items) => {
+    setCartItems(items)
+    localStorage.setItem("golfShopCart", JSON.stringify(items))
+    window.dispatchEvent(new Event("cartUpdated"))
+  }
+
+  const persistRequests = (items) => {
+    setRequestedItems(items)
+    localStorage.setItem("golfShopRequests", JSON.stringify(items))
+    window.dispatchEvent(new Event("cartUpdated"))
+  }
+
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return
     const updatedItems = cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
-    setCartItems(updatedItems)
-    localStorage.setItem("golfShopCart", JSON.stringify(updatedItems))
+    persistCart(updatedItems)
   }
 
+  // Remove from cart AND requestedItems (if present)
   const removeItem = (id) => {
-    const updatedItems = cartItems.filter((item) => item.id !== id)
-    setCartItems(updatedItems)
-    localStorage.setItem("golfShopCart", JSON.stringify(updatedItems))
+    const updatedCart = cartItems.filter((item) => item.id !== id)
+    persistCart(updatedCart)
+
+    const updatedRequests = requestedItems.filter((r) => r.id !== id)
+    persistRequests(updatedRequests)
   }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  // Remove requested item and also remove from cart if present
+  const removeRequestedItem = (id) => {
+    const updatedRequests = requestedItems.filter((r) => r.id !== id)
+    persistRequests(updatedRequests)
+
+    const updatedCart = cartItems.filter((c) => c.id !== id)
+    persistCart(updatedCart)
+  }
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0)
   const tax = subtotal * 0.08 // 8% tax
   const total = subtotal + tax
 
   const handleCheckout = (e) => {
     e.preventDefault()
+    // Here you might send data to backend...
     setShowConfirmation(true)
     setShowCheckout(false)
+
+    // Reset cart after checkout
+    persistCart([])
+    // keep requestedItems untouched (they are separate)
+    setCheckoutForm({ name: "", memberNumber: "", email: "", pickupDate: "" })
   }
 
   const getStatusColor = (status) => {
@@ -166,8 +206,7 @@ export default function Cart() {
             <Button
               onClick={() => {
                 setShowConfirmation(false)
-                setCartItems([])
-                localStorage.setItem("golfShopCart", JSON.stringify([]))
+                persistCart([])
                 setCheckoutForm({ name: "", memberNumber: "", email: "", pickupDate: "" })
               }}
               className="bg-green-600 text-white px-8 py-3"
@@ -211,36 +250,42 @@ export default function Cart() {
                   <div className="space-y-4">
                     {cartItems.map((item) => (
                       <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                        <img
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded"
-                          onError={(e) => {
-                            e.target.src = `/placeholder.svg?height=64&width=64&text=${encodeURIComponent(item.name)}`
-                          }}
-                        />
+                        <div className="w-16 h-16 relative flex-shrink-0">
+                          <Image
+                            src={item.image || placeholder}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            style={{ objectFit: "cover" }}
+                            className="rounded"
+                          />
+                        </div>
+
                         <div className="flex-1">
                           <h4 className="font-medium">{item.name}</h4>
                           <p className="text-green-600 font-semibold">${item.price}</p>
                         </div>
+
                         <div className="flex items-center gap-2">
                           <Button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
                             className="w-8 h-8 p-0 border border-gray-300 bg-white text-gray-600"
                           >
                             <MinusIcon />
                           </Button>
-                          <span className="w-8 text-center">{item.quantity}</span>
+                          <span className="w-8 text-center">{item.quantity || 1}</span>
                           <Button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
                             className="w-8 h-8 p-0 border border-gray-300 bg-white text-gray-600"
                           >
                             <PlusIcon />
                           </Button>
                         </div>
+
                         <Button
                           onClick={() => removeItem(item.id)}
                           className="w-8 h-8 p-0 bg-red-100 text-red-600 hover:bg-red-200"
+                          title="Remove from cart (also removes from requested gear)"
                         >
                           <XIcon />
                         </Button>
@@ -254,31 +299,54 @@ export default function Cart() {
             {/* Requested Gear Section */}
             <Card>
               <CardContent>
-                <h3 className="text-xl font-semibold mb-6">Requested Gear ({requestedItems.length})</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold">Requested Gear ({requestedItems.length})</h3>
+                  <Button
+                    onClick={() => {
+                      // Clear all requested items
+                      persistRequests([])
+                    }}
+                    className="text-sm bg-transparent border border-gray-200 px-3 py-1"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+
                 {requestedItems.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">No requested items</p>
                 ) : (
                   <div className="space-y-4">
                     {requestedItems.map((item) => (
                       <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
-                        <img
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded"
-                          onError={(e) => {
-                            e.target.src = `/placeholder.svg?height=64&width=64&text=${encodeURIComponent(item.name)}`
-                          }}
-                        />
+                        <div className="w-16 h-16 relative flex-shrink-0">
+                          <Image
+                            src={item.image || placeholder}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            style={{ objectFit: "cover" }}
+                            className="rounded"
+                          />
+                        </div>
+
                         <div className="flex-1">
                           <h4 className="font-medium">{item.name}</h4>
                           <p className="text-green-600 font-semibold">${item.price}</p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                            <span>Requested: {item.requestDate}</span>
-                            <span>ETA: {item.estimatedArrival}</span>
-                          </div>
+                          {/* Simplified: removed requestDate and ETA from requested gear display */}
                         </div>
+
                         <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(item.status)}`}>
-                          {item.status}
+                          {item.status || "Pending"}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            onClick={() => removeRequestedItem(item.id)}
+                            className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded"
+                            title="Remove from requested & cart"
+                          >
+                            Remove
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -390,6 +458,33 @@ export default function Cart() {
           </Card>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes progress {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+        .animate-progress {
+          animation: progress 4s linear;
+        }
+      `}</style>
     </main>
   )
 }
