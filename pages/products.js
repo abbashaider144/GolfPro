@@ -1,10 +1,18 @@
 "use client"
 
+import Image from "next/image"
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 
+// --- Images ---
+import golfDriverClub from "../assets/golf-driver-club.png"
+import golfIronSet from "../assets/golf-iron-set.png"
+import pingPutterGolfClub from "../assets/ping-putter-golf-club.png"
+import titleistGolfWedgeSet from "../assets/titleist-golf-wedge-set.png"
+import placeholder from "../assets/placeholder.png"
+
 // Inline Button component
-const Button = ({ children, onClick, className = "", disabled = false, variant = "primary" }) => {
+const Button = ({ children, onClick, className = "", disabled = false, variant = "primary", type = "button" }) => {
   const baseClasses =
     "px-4 py-2 rounded font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
   const variants = {
@@ -16,6 +24,7 @@ const Button = ({ children, onClick, className = "", disabled = false, variant =
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`${baseClasses} ${variants[variant]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
@@ -64,7 +73,6 @@ const SITE = {
 }
 
 const PRODUCTS = [
-  // Clubs - Men's
   {
     id: 1,
     name: "TaylorMade Driver",
@@ -72,7 +80,7 @@ const PRODUCTS = [
     price: 399.99,
     category: "Clubs",
     gender: "Men's",
-    image: "/golf-driver-club.png",
+    image: golfDriverClub,
     inStock: true,
   },
   {
@@ -82,7 +90,7 @@ const PRODUCTS = [
     price: 799.99,
     category: "Clubs",
     gender: "Men's",
-    image: "/golf-iron-set.png",
+    image: golfIronSet,
     inStock: true,
   },
   {
@@ -92,7 +100,7 @@ const PRODUCTS = [
     price: 249.99,
     category: "Clubs",
     gender: "Men's",
-    image: "/ping-putter-golf-club.png",
+    image: pingPutterGolfClub,
     inStock: false,
   },
   {
@@ -102,359 +110,7 @@ const PRODUCTS = [
     price: 449.99,
     category: "Clubs",
     gender: "Men's",
-    image: "/titleist-golf-wedge-set.png",
-    inStock: true,
-  },
-  {
-    id: 11,
-    name: "Cobra Hybrid Club",
-    description: "Versatile hybrid for various course conditions",
-    price: 189.99,
-    category: "Clubs",
-    gender: "Men's",
-    image: "/cobra-hybrid-golf-club.png",
-    inStock: true,
-  },
-
-  // Clubs - Women's
-  {
-    id: 12,
-    name: "Women's TaylorMade Driver",
-    description: "Lightweight driver designed for women golfers",
-    price: 369.99,
-    category: "Clubs",
-    gender: "Women's",
-    image: "/womens-taylormade-driver-pink.png",
-    inStock: false,
-  },
-  {
-    id: 13,
-    name: "Women's Callaway Iron Set",
-    description: "Complete iron set with enhanced forgiveness",
-    price: 699.99,
-    category: "Clubs",
-    gender: "Women's",
-    image: "/womens-callaway-iron-set.png",
-    inStock: true,
-  },
-  {
-    id: 14,
-    name: "Women's Ping Putter",
-    description: "Stylish putter with improved alignment",
-    price: 229.99,
-    category: "Clubs",
-    gender: "Women's",
-    image: "/womens-ping-putter-golf.png",
-    inStock: true,
-  },
-
-  // Shoes - Men's
-  {
-    id: 2,
-    name: "Nike Golf Shoes",
-    description: "Comfortable and stylish golf shoes",
-    price: 129.99,
-    category: "Shoes",
-    gender: "Men's",
-    image: "/mens-golf-shoes.png",
-    inStock: false,
-  },
-  {
-    id: 15,
-    name: "Adidas Golf Spikes",
-    description: "Professional golf shoes with superior grip",
-    price: 159.99,
-    category: "Shoes",
-    gender: "Men's",
-    image: "/adidas-mens-golf-shoes-spikes.png",
-    inStock: true,
-  },
-  {
-    id: 16,
-    name: "FootJoy Pro SL",
-    description: "Premium leather golf shoes for comfort",
-    price: 199.99,
-    category: "Shoes",
-    gender: "Men's",
-    image: "/footjoy-pro-sl-mens-golf-shoes.png",
-    inStock: true,
-  },
-  {
-    id: 17,
-    name: "Under Armour Spieth 5",
-    description: "Tour-inspired golf shoes with modern design",
-    price: 179.99,
-    category: "Shoes",
-    gender: "Men's",
-    image: "/under-armour-spieth-golf-shoes.png",
-    inStock: false,
-  },
-
-  // Shoes - Women's
-  {
-    id: 6,
-    name: "Women's Golf Shoes",
-    description: "Lightweight and comfortable",
-    price: 149.99,
-    category: "Shoes",
-    gender: "Women's",
-    image: "/womens-golf-shoes.png",
-    inStock: true,
-  },
-  {
-    id: 18,
-    name: "Women's Adidas Golf Shoes",
-    description: "Stylish and supportive golf footwear",
-    price: 139.99,
-    category: "Shoes",
-    gender: "Women's",
-    image: "/womens-adidas-golf-shoes-white-pink.png",
-    inStock: true,
-  },
-  {
-    id: 19,
-    name: "Women's FootJoy Traditions",
-    description: "Classic golf shoes with modern comfort",
-    price: 169.99,
-    category: "Shoes",
-    gender: "Women's",
-    image: "/womens-footjoy-traditions-golf-shoes.png",
-    inStock: false,
-  },
-
-  // Apparel - Men's
-  {
-    id: 20,
-    name: "Men's Golf Polo",
-    description: "Moisture-wicking performance polo",
-    price: 49.99,
-    category: "Apparel",
-    gender: "Men's",
-    image: "/mens-golf-polo-shirt-blue.png",
-    inStock: true,
-  },
-  {
-    id: 21,
-    name: "Men's Golf Shorts",
-    description: "Comfortable golf shorts with stretch fabric",
-    price: 59.99,
-    category: "Apparel",
-    gender: "Men's",
-    image: "/mens-golf-shorts-khaki.png",
-    inStock: true,
-  },
-  {
-    id: 22,
-    name: "Men's Golf Jacket",
-    description: "Windproof golf jacket for cool weather",
-    price: 89.99,
-    category: "Apparel",
-    gender: "Men's",
-    image: "/mens-golf-windbreaker-jacket.png",
-    inStock: false,
-  },
-  {
-    id: 23,
-    name: "Men's Golf Pants",
-    description: "Professional golf pants with modern fit",
-    price: 79.99,
-    category: "Apparel",
-    gender: "Men's",
-    image: "/mens-golf-pants-navy.png",
-    inStock: true,
-  },
-
-  // Apparel - Women's
-  {
-    id: 4,
-    name: "Women's Golf Polo",
-    description: "Moisture-wicking polo shirt",
-    price: 59.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/womens-golf-polo-shirt.png",
-    inStock: true,
-  },
-  {
-    id: 8,
-    name: "Women's Golf Skirt",
-    description: "Athletic golf skirt with built-in shorts",
-    price: 69.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/womens-golf-skirt.png",
-    inStock: false,
-  },
-  {
-    id: 24,
-    name: "Women's Golf Dress",
-    description: "Elegant golf dress for tournament play",
-    price: 89.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 25,
-    name: "Women's Golf Cardigan",
-    description: "Lightweight cardigan for layering",
-    price: 79.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: false,
-  },
-  {
-    id: 26,
-    name: "Women's Golf Capris",
-    description: "Comfortable capri pants for warm weather",
-    price: 64.99,
-    category: "Apparel",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-
-  // Accessories - General
-  {
-    id: 5,
-    name: "Golf Glove Set",
-    description: "Premium leather golf gloves",
-    price: 24.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/golf-gloves.png",
-    inStock: false,
-  },
-  {
-    id: 7,
-    name: "Golf Bag",
-    description: "Spacious cart bag with multiple pockets",
-    price: 199.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/golf-cart-bag.png",
-    inStock: true,
-  },
-  {
-    id: 27,
-    name: "Golf Ball Set",
-    description: "Premium golf balls for better performance",
-    price: 39.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 28,
-    name: "Golf Tees Pack",
-    description: "Wooden and plastic tees variety pack",
-    price: 12.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 29,
-    name: "Golf Towel",
-    description: "Microfiber golf towel with clip attachment",
-    price: 19.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: false,
-  },
-  {
-    id: 30,
-    name: "Golf Umbrella",
-    description: "Large golf umbrella for weather protection",
-    price: 34.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 31,
-    name: "Golf Rangefinder",
-    description: "Laser rangefinder for accurate distance measurement",
-    price: 249.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: false,
-  },
-  {
-    id: 32,
-    name: "Golf GPS Watch",
-    description: "GPS watch with course mapping and scoring",
-    price: 299.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 33,
-    name: "Women's Golf Gloves",
-    description: "Soft leather gloves designed for women",
-    price: 22.99,
-    category: "Accessories",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 34,
-    name: "Women's Golf Bag",
-    description: "Lightweight stand bag with stylish design",
-    price: 179.99,
-    category: "Accessories",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: false,
-  },
-  {
-    id: 35,
-    name: "Golf Ball Marker Set",
-    description: "Decorative ball markers with magnetic hat clip",
-    price: 16.99,
-    category: "Accessories",
-    gender: "Women's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 36,
-    name: "Golf Club Headcovers",
-    description: "Protective headcovers for drivers and woods",
-    price: 29.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: true,
-  },
-  {
-    id: 37,
-    name: "Golf Scorecard Holder",
-    description: "Leather scorecard holder with pencil",
-    price: 24.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
-    inStock: false,
-  },
-  {
-    id: 38,
-    name: "Golf Divot Tool",
-    description: "Premium divot repair tool with ball marker",
-    price: 14.99,
-    category: "Accessories",
-    gender: "Men's",
-    image: "/placeholder.svg?height=200&width=200",
+    image: titleistGolfWedgeSet,
     inStock: true,
   },
 ]
@@ -632,11 +288,14 @@ export default function Products() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <div onClick={() => setSelectedProduct(product)}>
-                <img
-                  src={product.image || "/placeholder.svg"}
+              <div onClick={() => setSelectedProduct(product)} className="w-full">
+                <Image
+                  src={product.image || placeholder}
                   alt={product.name}
+                  width={600}
+                  height={360}
                   className="w-full h-48 object-cover"
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               <CardContent>
@@ -694,10 +353,13 @@ export default function Products() {
         {selectedProduct && (
           <div className="p-6">
             <div className="grid md:grid-cols-2 gap-6">
-              <img
-                src={selectedProduct.image || "/placeholder.svg"}
+              <Image
+                src={selectedProduct.image || placeholder}
                 alt={selectedProduct.name}
+                width={700}
+                height={420}
                 className="w-full h-64 object-cover rounded-lg"
+                style={{ objectFit: "cover" }}
               />
               <div>
                 <h3 className="text-2xl font-bold mb-4">{selectedProduct.name}</h3>
@@ -852,10 +514,13 @@ export default function Products() {
           {selectedProduct && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-center mb-2">
-                <img
-                  src={selectedProduct.image || "/placeholder.svg"}
+                <Image
+                  src={selectedProduct.image || placeholder}
                   alt={selectedProduct.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded object-cover mr-3"
+                  style={{ objectFit: "cover" }}
                 />
                 <div>
                   <p className="font-medium text-left">{selectedProduct.name}</p>
@@ -908,6 +573,7 @@ export default function Products() {
                   </svg>
                 )}
               </div>
+
               <div className="ml-3 flex-1">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-900">
@@ -919,17 +585,22 @@ export default function Products() {
                     </svg>
                   </button>
                 </div>
+
                 <div className="mt-1 flex items-center">
-                  <img
-                    src={notification.product.image || "/placeholder.svg"}
+                  <Image
+                    src={notification.product.image || placeholder}
                     alt={notification.product.name}
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded object-cover mr-2"
+                    style={{ objectFit: "cover" }}
                   />
                   <div>
                     <p className="text-sm text-gray-700 font-medium">{notification.product.name}</p>
                     <p className="text-xs text-gray-500">${notification.product.price}</p>
                   </div>
                 </div>
+
                 <div className="mt-3 flex gap-2">
                   <Link
                     href="/cart"
@@ -948,6 +619,7 @@ export default function Products() {
                 </div>
               </div>
             </div>
+
             {/* Progress bar */}
             <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
               <div className="bg-green-500 h-1 rounded-full animate-progress"></div>
@@ -968,7 +640,7 @@ export default function Products() {
             opacity: 1;
           }
         }
-        
+
         @keyframes progress {
           from {
             width: 100%;
@@ -977,11 +649,11 @@ export default function Products() {
             width: 0%;
           }
         }
-        
+
         .animate-slide-in {
           animation: slide-in 0.3s ease-out;
         }
-        
+
         .animate-progress {
           animation: progress 4s linear;
         }
